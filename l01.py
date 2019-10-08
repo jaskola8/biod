@@ -17,6 +17,16 @@ def main():
 
     filename = "./reftexts/letters/110CYL067.txt"
     ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
+
+
+    ref_rafalala_pl = "./reftexts/languages/rafalalapl.txt"
+    ref_rafalala_eng = "./reftexts/languages/rafalalaeng.txt"
+    ref_rafalala_de = "./reftexts/languages/rafalalade.txt"
+
+    create_freq_histogram(pr.create_char_freq_from_file(ref_rafalala_pl))
+    create_freq_histogram(pr.create_char_freq_from_file(ref_rafalala_de))
+    create_freq_histogram(pr.create_char_freq_from_file(ref_rafalala_eng))
+
     with open(filename, "r") as f:
         text = f.read()
     cipher = rot(text, 10)
@@ -73,7 +83,6 @@ def create_freq_histogram(freq_dict: dict):
 - RC4
 - bruteforce with entropy
 '''
-
 
 if __name__ == "__main__":
     main()
