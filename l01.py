@@ -15,18 +15,21 @@ def main():
     #print(vigenere(vigenere(text, "abcd"), "abcd", True))
     # print(vigenere(text, "###"))
 
-    '''filename = "./reftexts/letters/110CYL067.txt"
-    ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
+    filename = "./reftexts/letters/110CYL067.txt"
+    '''ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"'''
     with open(filename, "r") as f:
         text = f.read()
-    cipher = rot(text, 10)
+    '''cipher = rot(text, 10)
     decrypt_by_freq(ref_filename, cipher)'''
 
     key = "Wiki"
-    text = "pedia"
+    # text = "pedia"
     encoded = encode_rc4(text, key)
     print(encoded)
-    print(decode_rc4(encoded, key))
+    print(pr.calc_text_entropy(encoded))
+    decoded = decode_rc4(encoded, key)
+    print(decoded)
+    print(pr.calc_text_entropy(decoded))
 
 
 # Encrypt/Decrypt given text by rotation
@@ -46,6 +49,7 @@ def vigenere(text: str, keyword: str, decrypt=False):
     return result
 
 
+# Decrypt rotational ciphertexts by analizing frequency
 def decrypt_by_freq(ref_file, text):
     ref_prob = pr.create_char_prob(pr.create_char_freq_from_file(ref_file))
     best_guess = {}
@@ -67,6 +71,7 @@ def decrypt_by_freq(ref_file, text):
           "z odszyfrowanym tekstem postaci: {}\n".format(best_fit, best_guess_dis, best_guess))
 
 
+# Encodes text using rc4 alg and key
 def encode_rc4(text: str, k: str):
     result = ''
     S = [x for x in range(256)]
@@ -83,10 +88,12 @@ def encode_rc4(text: str, k: str):
     return result
 
 
+# Decodes rc4 ciphertext to ascii
 def decode_rc4(text: str, k: str):
     return bytearray.fromhex(encode_rc4(bytearray.fromhex(text).decode("Latin-1"), k)).decode()
 
 
+# Pseudo-random generation algorithm
 def PRGA(S):
     i, j = 0, 0
     while True:
@@ -101,8 +108,7 @@ def PRGA(S):
 
 ''' TODO
 - plot char freq for comparison
-- RC4
-- bruteforce with entropy
+- improve RC4 (questionable) and implement RC4 bruteforce (easy)
 '''
 
 

@@ -50,5 +50,6 @@ def create_char_freq_from_file(filepath: str):
             calc_char_freq(remove_whitespaces(line), freq)
     return freq
 
+
 ''' TODO
 - select best way to calculate frequency/probability'''
