@@ -1,5 +1,5 @@
 from text import proc as pr
-
+import matplotlib.pyplot as plt
 
 dict_size = 256  # Size of character set
 offset = 0  # Position of first character in set
@@ -9,15 +9,14 @@ def main():
     global dict_size
     global offset
     # text = "napis do testowania"
-    #text = "###"
+    # text = "###"
     # print(rot(text, 3))
     # print(rot256(rot256(text, 13), 13, True))
-    #print(vigenere(vigenere(text, "abcd"), "abcd", True))
+    # print(vigenere(vigenere(text, "abcd"), "abcd", True))
     # print(vigenere(text, "###"))
 
     filename = "./reftexts/letters/110CYL067.txt"
     ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
-
 
     ref_rafalala_pl = "./reftexts/languages/rafalalapl.txt"
     ref_rafalala_eng = "./reftexts/languages/rafalalaeng.txt"
@@ -74,7 +73,6 @@ def decrypt_by_freq(ref_file, text):
 def create_freq_histogram(freq_dict: dict):
     plt.bar(list(freq_dict.keys()), freq_dict.values())
     plt.show()
-
 
 
 ''' TODO
