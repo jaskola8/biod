@@ -15,12 +15,18 @@ def main():
     #print(vigenere(vigenere(text, "abcd"), "abcd", True))
     # print(vigenere(text, "###"))
 
-    filename = "./reftexts/letters/110CYL067.txt"
+    '''filename = "./reftexts/letters/110CYL067.txt"
     ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
     with open(filename, "r") as f:
         text = f.read()
     cipher = rot(text, 10)
-    decrypt_by_freq(ref_filename, cipher)
+    decrypt_by_freq(ref_filename, cipher)'''
+
+    key = "Wiki"
+    text = "pedia"
+    encoded = encode_rc4(text, key)
+    print(encoded)
+    print(decode_rc4(encoded, key))
 
 
 # Encrypt/Decrypt given text by rotation
@@ -61,9 +67,39 @@ def decrypt_by_freq(ref_file, text):
           "z odszyfrowanym tekstem postaci: {}\n".format(best_fit, best_guess_dis, best_guess))
 
 
+def encode_rc4(text: str, k: str):
+    result = ''
+    S = [x for x in range(256)]
+    j = 0
+    for i in range(256):
+        j = (j + S[i] + ord(k[i % len(k)])) % 256
+        S[i], S[j] = S[j], S[i]
+
+    text_num = [ord(c) for c in k]
+    key = PRGA(S)
+    for c in text:
+        result += "%02X" % (ord(c) ^ next(key))
+
+    return result
+
+
+def decode_rc4(text: str, k: str):
+    return bytearray.fromhex(encode_rc4(bytearray.fromhex(text).decode("Latin-1"), k)).decode()
+
+
+def PRGA(S):
+    i, j = 0, 0
+    while True:
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+        S[i], S[j] = S[j], S[i]  # swap
+
+        K = S[(S[i] + S[j]) % 256]
+        yield K
+
+
 
 ''' TODO
-- decrypt using char freq
 - plot char freq for comparison
 - RC4
 - bruteforce with entropy
