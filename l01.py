@@ -61,6 +61,11 @@ def decrypt_by_freq(ref_file, text):
           "z odszyfrowanym tekstem postaci: {}\n".format(best_fit, best_guess_dis, best_guess))
 
 
+def create_freq_histogram(freq_dict: dict):
+    plt.bar(list(freq_dict.keys()), freq_dict.values())
+    plt.show()
+
+
 
 ''' TODO
 - decrypt using char freq
