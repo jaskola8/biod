@@ -1,5 +1,11 @@
-from text import proc as pr
+import binascii
+import itertools
+import string
 
+import matplotlib.pyplot as plt
+from Crypto.Cipher import ARC4
+
+from text import proc as pr
 
 dict_size = 256  # Size of character set
 offset = 0  # Position of first character in set
@@ -8,28 +14,25 @@ offset = 0  # Position of first character in set
 def main():
     global dict_size
     global offset
-    # text = "napis do testowania"
-    #text = "###"
-    # print(rot(text, 3))
-    # print(rot256(rot256(text, 13), 13, True))
-    #print(vigenere(vigenere(text, "abcd"), "abcd", True))
-    # print(vigenere(text, "###"))
+    '''
+    rot_cipher = "./crypto.rot"
+    ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
+    with open(rot_cipher, "r") as f:
+        decrypt_by_freq(ref_filename, f.read())
 
-    filename = "./reftexts/letters/110CYL067.txt"
-    '''ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"'''
-    with open(filename, "r") as f:
+    for filename in (ref_filename, "./example.pl"):
+        with open(filename, "r") as f:
+            freq = pr.calc_char_freq(f.read())
+            create_freq_histogram(freq)
+    '''
+    rc4_cipher = "./crypto.rc4"
+    with open(rc4_cipher, "rb") as f:
         text = f.read()
-    '''cipher = rot(text, 10)
-    decrypt_by_freq(ref_filename, cipher)'''
 
-    key = "Wiki"
-    # text = "pedia"
-    encoded = encode_rc4(text, key)
-    print(encoded)
-    print(pr.calc_text_entropy(encoded))
-    decoded = decode_rc4(encoded, key)
+    key, fit, decoded = bruteforce_RC4(text, 3)
+    print(key, fit)
     print(decoded)
-    print(pr.calc_text_entropy(decoded))
+
 
 
 # Encrypt/Decrypt given text by rotation
@@ -52,7 +55,7 @@ def vigenere(text: str, keyword: str, decrypt=False):
 # Decrypt rotational ciphertexts by analizing frequency
 def decrypt_by_freq(ref_file, text):
     ref_prob = pr.create_char_prob(pr.create_char_freq_from_file(ref_file))
-    best_guess = {}
+    best_guess = ""
     best_guess_dis = None
     best_fit = -1
     for dis in range(0, dict_size):
@@ -68,7 +71,8 @@ def decrypt_by_freq(ref_file, text):
             best_guess = rotated_text
             best_guess_dis = dis
     print("Najlepsze dopasowanie o wartości {} uzyskano stosując przesunięcie o {} pozycji "
-          "z odszyfrowanym tekstem postaci: {}\n".format(best_fit, best_guess_dis, best_guess))
+          "z odszyfrowanym tekstem postaci: {}\n".format(best_fit, abs(256 - best_guess_dis), best_guess))
+    # return best_guess
 
 
 # Encodes text using rc4 alg and key
@@ -83,13 +87,15 @@ def encode_rc4(text: str, k: str):
     text_num = [ord(c) for c in k]
     key = PRGA(S)
     for c in text:
-        result += "%02X" % (ord(c) ^ next(key))
+        result += "%02X" % (c ^ next(key))
 
-    return result
+    return bytes.fromhex(result).decode("Latin-1")
 
 
 # Decodes rc4 ciphertext to ascii
 def decode_rc4(text: str, k: str):
+    text = binascii.hexlify(text)
+    print(text)
     return bytearray.fromhex(encode_rc4(bytearray.fromhex(text).decode("Latin-1"), k)).decode()
 
 
@@ -104,6 +110,27 @@ def PRGA(S):
         K = S[(S[i] + S[j]) % 256]
         yield K
 
+
+def bruteforce_RC4(text, key_len):
+    lowest_entropy = None
+    best_key = ""
+    result = ""
+    for key in itertools.combinations(string.ascii_lowercase, key_len):
+        key = ''.join(key)
+        cipher = ARC4.new(key)
+        decoded = cipher.decrypt(text)
+        decoded = bytearray(decoded).decode("Latin-1")
+        ent = pr.calc_text_entropy(decoded)
+        if lowest_entropy is None or ent < lowest_entropy:
+            lowest_entropy = ent
+            best_key = key
+            result = decoded
+    return best_key, lowest_entropy, result
+
+
+def create_freq_histogram(freq_dict: dict):
+    plt.bar(list(freq_dict.keys()), freq_dict.values())
+    plt.show()
 
 
 ''' TODO

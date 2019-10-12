@@ -7,9 +7,9 @@ def calc_text_entropy(text: str):
     freq = calc_char_freq(text)
     prob = create_char_prob(freq)
     result = 0
-    for char in text:
-        result += prob[char] * math.log(prob[char], 2)
-    return -result
+    for char in prob.keys():
+        result -= prob[char] * math.log(prob[char], 2)
+    return result
 
 
 # Create char probability dict from frequency dict
