@@ -115,7 +115,7 @@ def bruteforce_RC4(text, key_len):
     lowest_entropy = None
     best_key = ""
     result = ""
-    for key in itertools.combinations(string.ascii_lowercase, key_len):
+    for key in itertools.product(string.ascii_lowercase, repeat=key_len):
         key = ''.join(key)
         cipher = ARC4.new(key)
         decoded = cipher.decrypt(text)
