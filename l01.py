@@ -1,3 +1,6 @@
+
+from text import proc as pr
+import matplotlib.pyplot as plt
 import binascii
 import itertools
 import string
@@ -14,6 +17,25 @@ offset = 0  # Position of first character in set
 def main():
     global dict_size
     global offset
+    # text = "napis do testowania"
+    # text = "###"
+    # print(rot(text, 3))
+    # print(rot256(rot256(text, 13), 13, True))
+    # print(vigenere(vigenere(text, "abcd"), "abcd", True))
+    # print(vigenere(text, "###"))
+
+    filename = "./reftexts/letters/110CYL067.txt"
+    ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
+
+    ref_rafalala_pl = "./reftexts/languages/rafalalapl.txt"
+    ref_rafalala_eng = "./reftexts/languages/rafalalaeng.txt"
+    ref_rafalala_de = "./reftexts/languages/rafalalade.txt"
+
+    create_freq_histogram(pr.create_char_freq_from_file(ref_rafalala_pl))
+    create_freq_histogram(pr.create_char_freq_from_file(ref_rafalala_de))
+    create_freq_histogram(pr.create_char_freq_from_file(ref_rafalala_eng))
+
+    with open(filename, "r") as f:
     '''
     rot_cipher = "./crypto.rot"
     ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
@@ -132,12 +154,15 @@ def create_freq_histogram(freq_dict: dict):
     plt.bar(list(freq_dict.keys()), freq_dict.values())
     plt.show()
 
+def create_freq_histogram(freq_dict: dict):
+    plt.bar(list(freq_dict.keys()), freq_dict.values())
+    plt.show()
+
 
 ''' TODO
 - plot char freq for comparison
 - improve RC4 (questionable) and implement RC4 bruteforce (easy)
 '''
-
 
 if __name__ == "__main__":
     main()
