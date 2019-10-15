@@ -4,3 +4,11 @@
 - AES + CBC file encryption
 - uniwersalna funkcji do bruteforce entropią
 '''
+
+
+def main():
+    print('Main')
+
+
+if __name__ == "__main__":
+    main()
