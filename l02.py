@@ -1,3 +1,4 @@
+import math
 from Crypto.Cipher import AES
 import hashlib
 from Crypto.Random import get_random_bytes
@@ -10,7 +11,7 @@ from text import proc as pr
 ENTROPY_LIMIT = 5
 chunk_size = 64 * 1024
 encoding = 'utf-8'
-
+entropy_log_base = 2
 
 ''' TODO
 - obliczanie entropii maksymalnej ciągu długości k w alfabecie o wielkości n
@@ -18,8 +19,6 @@ encoding = 'utf-8'
 - AES + CBC file encryption
 - uniwersalna funkcji do bruteforce entropią
 '''
-
-
 
 def main():
     '''
@@ -32,9 +31,16 @@ def main():
     print(key)
     print(decoded)
     '''
-    
+
+    example = 'entropy'
+    alphabet_size = len(string.ascii_lowercase)
     filename = "./reftexts/letters/110CYL067.txt"
     print(str(encrypt_with_aes_cbc_mode('Dupa', filename)))
+    print('Entropy = ' + str(calc_max_str_entropy(example, alphabet_size)))
+
+
+def calc_max_str_entropy(text, dict_size):
+    return len(text) * math.log(dict_size, entropy_log_base)
 
 
 def encrypt_with_aes_cbc_mode(key, filename):
@@ -52,7 +58,7 @@ def encrypt_with_aes_cbc_mode(key, filename):
                 by = encryptor.encrypt(chunk)
                 print(by)
 
-                
+
 def keygen(passwd: str, salt: str, iterc: int, keysize: int):
     passwd = passwd.encode(encoding="Latin-1")
     salt = salt.encode(encoding="Latin-1")
@@ -81,6 +87,7 @@ def bruteforce(crypto: str, decryptor, keylen: int, characters: list):
         if pr.calc_text_entropy(decoded) < ENTROPY_LIMIT:
             return decoded, key
     return None, None
+
 
 if __name__ == "__main__":
     main()
