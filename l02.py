@@ -12,7 +12,9 @@ entropy_log_base = 2
 
 
 def main():
-    print('Entropy = ' + str(calc_max_str_entropy("Entropy", len(string.ascii_lowercase))))
+    example = 'entropy'
+    alphabet_size = len(string.ascii_lowercase)
+    print('Entropy = ' + str(calc_max_str_entropy(example, alphabet_size)))
 
 
 def calc_max_str_entropy(text, dict_size):
