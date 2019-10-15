@@ -88,6 +88,7 @@ def bruteforce(crypto: str, decryptor, keylen: int, characters: list):
             return decoded, key
     return None, None
 
+
 if __name__ == "__main__":
     main()
 
