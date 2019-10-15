@@ -1,6 +1,3 @@
-
-from text import proc as pr
-import matplotlib.pyplot as plt
 import binascii
 import itertools
 import string
@@ -117,7 +114,6 @@ def encode_rc4(text: str, k: str):
 # Decodes rc4 ciphertext to ascii
 def decode_rc4(text: str, k: str):
     text = binascii.hexlify(text)
-    print(text)
     return bytearray.fromhex(encode_rc4(bytearray.fromhex(text).decode("Latin-1"), k)).decode()
 
 
