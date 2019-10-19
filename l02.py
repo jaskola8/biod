@@ -95,8 +95,8 @@ def bruteforce(crypto: str, decryptor, keylen: int, characters: list):
 
 
 def zad1():
-    cbc_filename = encrypt("demo24.bmp", "CBC", "key4567890123456")
-    ecb_filename = encrypt("demo24.bmp", "ECB", "key4567890123456")
+    cbc_filename = encrypt("./resources/demo24.bmp", "CBC", "key4567890123456")
+    ecb_filename = encrypt("./resources/demo24.bmp", "ECB", "key4567890123456")
     with open(cbc_filename, "rb", ) as f:
         print(pr.calc_text_entropy(f.read()))
     with open(ecb_filename, "rb", ) as f:
@@ -105,7 +105,7 @@ def zad1():
 
 def zad2():
     salt = "aaaaaaaaaaaaaaaa"
-    input_filename = 'we800_CBC_encrypted.bmp'
+    input_filename = './resources/we800_CBC_encrypted.bmp'
     img_in = Image.open(input_filename)
     data = img_in.convert("RGB").tobytes()
     entropy = 99
@@ -125,16 +125,11 @@ def zad2():
         if entropy < ENTROPY_LIMIT:
             img_out = Image.new(img_in.mode, img_in.size)
             img_out.putdata(decoded)
-            output_filename = 'decrypted.bmp'
+            output_filename = './resources/decrypted.bmp'
             img_format = str(input_filename.split('.')[-1])
             img_out.save(output_filename, img_format)
             return entropy
 
-
-def zad3():
-    passwd_len = 0
-    aes_entropy = 256 * 8 * math.log(2, 2)
-    n * math.log(len(string.ascii_lowercase), 2) < aes_entropy
 
 if __name__ == "__main__":
     # zad1()
