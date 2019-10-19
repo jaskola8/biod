@@ -1,12 +1,17 @@
-import math
-from Crypto.Cipher import AES
 import hashlib
-from Crypto.Random import get_random_bytes
 import itertools
+import math
 import string
-from Crypto.Cipher import ARC4
-from text import proc as pr
 
+from Crypto.Cipher import AES
+from Crypto.Protocol.KDF import PBKDF2
+from Crypto.Random import get_random_bytes
+from PIL import Image
+
+from BMPencrypt import convert_to_RGB
+from BMPencrypt import encrypt
+from BMPencrypt import expand_data
+from text import proc as pr
 
 ENTROPY_LIMIT = 5
 chunk_size = 64 * 1024
@@ -89,6 +94,48 @@ def bruteforce(crypto: str, decryptor, keylen: int, characters: list):
     return None, None
 
 
-if __name__ == "__main__":
-    main()
+def zad1():
+    cbc_filename = encrypt("demo24.bmp", "CBC", "key4567890123456")
+    ecb_filename = encrypt("demo24.bmp", "ECB", "key4567890123456")
+    with open(cbc_filename, "rb", ) as f:
+        print(pr.calc_text_entropy(f.read()))
+    with open(ecb_filename, "rb", ) as f:
+        print(pr.calc_text_entropy(f.read()))
 
+
+def zad2():
+    salt = "aaaaaaaaaaaaaaaa"
+    input_filename = 'we800_CBC_encrypted.bmp'
+    img_in = Image.open(input_filename)
+    data = img_in.convert("RGB").tobytes()
+    entropy = 99
+    data_expanded = expand_data(data)
+    passing = True
+    for passwd in itertools.product(string.ascii_lowercase, repeat=3):
+        passwd = ''.join(passwd)
+        if passwd == "fea":
+            passing = False
+        if passing:
+            continue
+        print(passwd)
+        key = PBKDF2(passwd, b'abc')
+        aes = AES.new(key, AES.MODE_CBC, salt)
+        decoded = convert_to_RGB(aes.decrypt(data_expanded)[:len(data)])
+        entropy = pr.calc_text_entropy(decoded)
+        if entropy < ENTROPY_LIMIT:
+            img_out = Image.new(img_in.mode, img_in.size)
+            img_out.putdata(decoded)
+            output_filename = 'decrypted.bmp'
+            img_format = str(input_filename.split('.')[-1])
+            img_out.save(output_filename, img_format)
+            return entropy
+
+
+def zad3():
+    passwd_len = 0
+    aes_entropy = 256 * 8 * math.log(2, 2)
+    n * math.log(len(string.ascii_lowercase), 2) < aes_entropy
+
+if __name__ == "__main__":
+    # zad1()
+    print(zad2())

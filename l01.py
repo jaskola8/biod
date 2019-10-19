@@ -20,7 +20,7 @@ def main():
     # print(rot256(rot256(text, 13), 13, True))
     # print(vigenere(vigenere(text, "abcd"), "abcd", True))
     # print(vigenere(text, "###"))
-
+    '''
     filename = "./reftexts/letters/110CYL067.txt"
     ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
 
@@ -33,7 +33,6 @@ def main():
     create_freq_histogram(pr.create_char_freq_from_file(ref_rafalala_eng))
 
     with open(filename, "r") as f:
-    '''
     rot_cipher = "./crypto.rot"
     ref_filename = "./reftexts/fiction/A_Wasted_Day.txt"
     with open(rot_cipher, "r") as f:
