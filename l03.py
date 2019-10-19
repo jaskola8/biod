@@ -1,11 +1,12 @@
-from typing import Callable, List
+from typing import Callable, List, Dict
 
 
 def main():
     pass
 
 
-class HtPasswd():
+class Htpasswd():
+    data: Dict[str, str]
 
     def __init__(self, filename: str):
         self.data = self._fromfile(filename)
