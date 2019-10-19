@@ -59,4 +59,5 @@ if __name__ == "__main__":
 - timing function
 - bruteforce hash
 - collisions
+- compare johntheripper to python
 '''
