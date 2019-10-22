@@ -3,6 +3,7 @@ import itertools
 import string
 import subprocess
 import timeit
+import hashlib
 from typing import Callable, List, Dict
 
 
@@ -42,7 +43,11 @@ class Htpasswd():
 
 
 def md5sum(filename: str) -> str:
-    pass
+    hash_md5 = hashlib.md5()
+    with open(filename, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
 
 
 def md5compare(filename_first: str, filename_sec: str) -> bool:
@@ -97,7 +102,7 @@ if __name__ == "__main__":
 - write object to htpasswd
 - change password in htpasswd DONE
 - add user to htpasswd
-- md5sum calculate
+- md5sum calculate DONE
 - md5sum compare DONE
 - bruteforce hash DONE
 - collisions
