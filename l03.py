@@ -9,37 +9,36 @@ from typing import Callable, List, Dict
 # Remember to remove john.pot
 def main():
     htpasswd = Htpasswd('./resources/htpasswd')
+    htpasswd.add_user('pip', 'bip')
+    htpasswd.add_user('dick', 'sik')
+    htpasswd.change_password('dick', 'zik')
+    htpasswd.write('./resources/htpasswd')
     print(htpasswd.data)
-    htpasswd.change_password('pip', 'bip')
     print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
-    compare_jtr()
+
+
+#    compare_jtr()
 
 
 class Htpasswd():
     data: Dict[str, str]
     salt: str
-    filename: str
 
     def __init__(self, filename: str):
         self.data = self._fromfile(filename)
-        self.filename = filename
 
     def write(self, filename: str):
         with open(filename, 'w') as f:
-            f.write(self.data.__str__())
-
-    def _write(self, filename: str, username):
-        with open(filename, 'w') as f:
-            f.write("%s:%s" % (username, crypt.crypt(self.data[username], crypt.METHOD_CRYPT)))
-        f.close()
+            newline = ''
+            for username in self.data.keys():
+                f.write("%s%s:%s" % (newline, username, self.data[username]))
+                newline = '\n'
 
     def change_password(self, username: str, password: str):
-        self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT) + "\n"
+        self.add_user(username, password)
 
     def add_user(self, username: str, password: str):
-        if not self.data.__contains__(username):
-            self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT) + "\n"
-            self.write(self.filename, username)
+        self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT)
 
     @staticmethod
     def _fromfile(filename: str) -> Dict[str, str]:
@@ -104,10 +103,10 @@ if __name__ == "__main__":
 
 '''TODO
 - read htpasswd to object DONE
-- write object to htpasswd
+- write object to htpasswd DONE
 - change password in htpasswd DONE
-- add user to htpasswd
-- md5sum calculate
+- add user to htpasswd DONE
+- md5sum calculate 
 - md5sum compare DONE
 - bruteforce hash DONE
 - collisions
