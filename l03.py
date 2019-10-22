@@ -10,9 +10,8 @@ from typing import Callable, List, Dict
 def main():
     htpasswd = Htpasswd('./resources/htpasswd')
     print(htpasswd.data)
-    htpasswd.change_password('pip', 'bip')
+    print(htpasswd.check_user('admin', 'aaa'))
     print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
-    compare_jtr()
 
 
 class Htpasswd():
@@ -30,6 +29,11 @@ class Htpasswd():
 
     def add_user(self, username: str, password: str):
         pass
+
+    def check_user(self, username: str, password: str):
+        if self.data.__contains__(username):
+            return self.data[username] == crypt.crypt(password, self.data[username])
+        return False
 
     @staticmethod
     def _fromfile(filename: str) -> Dict[str, str]:
@@ -87,6 +91,13 @@ def _helper1():
 def _helper2():
     htpasswd = Htpasswd('./resources/htpasswd')
     bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3)
+
+
+def trivial_hash(dane):
+    hash = 0
+    for znak in dane:
+        hash += ord(znak)
+    return hash % 999
 
 
 if __name__ == "__main__":
