@@ -18,18 +18,28 @@ def main():
 class Htpasswd():
     data: Dict[str, str]
     salt: str
+    filename: str
 
     def __init__(self, filename: str):
         self.data = self._fromfile(filename)
+        self.filename = filename
 
     def write(self, filename: str):
-        pass
+        with open(filename, 'w') as f:
+            f.write(self.data.__str__())
+
+    def _write(self, filename: str, username):
+        with open(filename, 'w') as f:
+            f.write("%s:%s" % (username, crypt.crypt(self.data[username], crypt.METHOD_CRYPT)))
+        f.close()
 
     def change_password(self, username: str, password: str):
-        self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT)
+        self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT) + "\n"
 
     def add_user(self, username: str, password: str):
-        pass
+        if not self.data.__contains__(username):
+            self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT) + "\n"
+            self.write(self.filename, username)
 
     @staticmethod
     def _fromfile(filename: str) -> Dict[str, str]:
