@@ -3,15 +3,24 @@ import itertools
 import string
 import subprocess
 import timeit
+import hashlib
 from typing import Callable, List, Dict
 
 
 # Remember to remove john.pot
 def main():
     htpasswd = Htpasswd('./resources/htpasswd')
+    htpasswd.add_user('pip', 'bip')
+    htpasswd.add_user('dick', 'sik')
+    htpasswd.change_password('dick', 'zik')
+    htpasswd.write('./resources/htpasswd')
     print(htpasswd.data)
     print(htpasswd.check_user('admin', 'aaa'))
     print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
+    print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
+
+
+#    compare_jtr()
 
 
 class Htpasswd():
@@ -22,13 +31,17 @@ class Htpasswd():
         self.data = self._fromfile(filename)
 
     def write(self, filename: str):
-        pass
+        with open(filename, 'w') as f:
+            newline = ''
+            for username in self.data.keys():
+                f.write("%s%s:%s" % (newline, username, self.data[username]))
+                newline = '\n'
 
     def change_password(self, username: str, password: str):
-        self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT)
+        self.add_user(username, password)
 
     def add_user(self, username: str, password: str):
-        pass
+        self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT)
 
     def check_user(self, username: str, password: str):
         if self.data.__contains__(username):
@@ -46,7 +59,11 @@ class Htpasswd():
 
 
 def md5sum(filename: str) -> str:
-    pass
+    hash_md5 = hashlib.md5()
+    with open(filename, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
 
 
 def md5compare(filename_first: str, filename_sec: str) -> bool:
@@ -105,10 +122,9 @@ if __name__ == "__main__":
 
 '''TODO
 - read htpasswd to object DONE
-- write object to htpasswd
+- write object to htpasswd DONE
 - change password in htpasswd DONE
-- add user to htpasswd
-- md5sum calculate
+
 - md5sum compare DONE
 - bruteforce hash DONE
 - collisions
