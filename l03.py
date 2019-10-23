@@ -1,24 +1,36 @@
 import crypt
+import hashlib
 import itertools
+import random
 import string
 import subprocess
 import timeit
-import hashlib
 from typing import Callable, List, Dict
 
 
 # Remember to remove john.pot
 def main():
-    htpasswd = Htpasswd('./resources/htpasswd')
-    htpasswd.add_user('pip', 'bip')
-    htpasswd.add_user('dick', 'sik')
-    htpasswd.change_password('dick', 'zik')
-    htpasswd.write('./resources/htpasswd')
+    '''htpasswd = Htpasswd('./resources/htpasswd1')
+    #htpasswd.add_user('pip', 'bip')
+    #htpasswd.add_user('dick', 'sik')
+    #htpasswd.change_password('dick', 'zik')
+    #tpasswd.add_user('mick', 'rick')
+
+    htpasswd.write('./resources/htpasswd1')
     print(htpasswd.data)
     print(htpasswd.check_user('admin', 'aaa'))
-    print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
-    print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
-
+    print(htpasswd.check_user('pip', 'bip'))
+    print(htpasswd.check_user('mick', 'rick'))
+    #print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
+    #print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
+    htpasswd = Htpasswd('./resources/htpasswd1')
+    print(htpasswd.data)
+    htpasswd.change_password('mick')
+    htpasswd.change_password('pip')
+    print(htpasswd.data)
+    htpasswd.write('./resources/htpasswd1')
+'''
+    compare_time()
 
 #    compare_jtr()
 
@@ -37,11 +49,41 @@ class Htpasswd():
                 f.write("%s%s:%s" % (newline, username, self.data[username]))
                 newline = '\n'
 
-    def change_password(self, username: str, password: str):
-        self.add_user(username, password)
+    def change_password(self, username: str):
+        if username not in self.data:
+            print("Uzytkownik {} nie znajduje sie w bazie.".format(username))
+            return False
+        passwd = input('Old password: ')
+        if self.data[username] == crypt.crypt(passwd, self.data[username]):
+            new_passwd = input('New password: ')
+            if new_passwd == input('Repeat password: '):
+                method = crypt.METHOD_MD5 if self.data[username][0] == '$' else crypt.METHOD_CRYPT
+                self.data[username] = crypt.crypt(new_passwd, method)
+                return True
+            else:
+                print("Passwords do not match")
+        else:
+            print("Wrong password")
+        return False
 
-    def add_user(self, username: str, password: str):
-        self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT)
+
+def md5():
+    crypt.crypt(''.join(random.choices(string.ascii_lowercase, k=3)), crypt.METHOD_MD5)
+
+
+def crypting():
+    crypt.crypt(''.join(random.choices(string.ascii_lowercase, k=3)), crypt.METHOD_CRYPT)
+
+
+def compare_time():
+    iterations = 5000
+    m5time = timeit.timeit(md5, number=5000)
+    print('Algorytm MD5: {} hashy na sekundę.', iterations / m5time)
+    cryptime = timeit.timeit(crypting, number=5000)
+    print('Algorytm crypt: {} hashy na sekundę.', iterations / cryptime)
+
+    def add_user(self, username: str, password: str, method):
+        self.data[username] = crypt.crypt(password, crypt.METHOD_MD5)
 
     def check_user(self, username: str, password: str):
         if self.data.__contains__(username):
