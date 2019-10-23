@@ -15,6 +15,8 @@ def main():
     htpasswd.change_password('dick', 'zik')
     htpasswd.write('./resources/htpasswd')
     print(htpasswd.data)
+    print(htpasswd.check_user('admin', 'aaa'))
+    print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
     print(bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3))
 
 
@@ -40,6 +42,11 @@ class Htpasswd():
 
     def add_user(self, username: str, password: str):
         self.data[username] = crypt.crypt(password, crypt.METHOD_CRYPT)
+
+    def check_user(self, username: str, password: str):
+        if self.data.__contains__(username):
+            return self.data[username] == crypt.crypt(password, self.data[username])
+        return False
 
     @staticmethod
     def _fromfile(filename: str) -> Dict[str, str]:
@@ -101,6 +108,13 @@ def _helper1():
 def _helper2():
     htpasswd = Htpasswd('./resources/htpasswd')
     bruteforce_hashes(htpasswd.data.values(), string.ascii_lowercase, 3)
+
+
+def trivial_hash(dane):
+    hash = 0
+    for znak in dane:
+        hash += ord(znak)
+    return hash % 999
 
 
 if __name__ == "__main__":
