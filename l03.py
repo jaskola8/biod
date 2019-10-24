@@ -10,13 +10,10 @@ from typing import Callable, List, Dict
 
 # Remember to remove john.pot
 def main():
-    '''htpasswd = Htpasswd('./resources/htpasswd1')
-    #htpasswd.add_user('pip', 'bip')
-    #htpasswd.add_user('dick', 'sik')
-    #htpasswd.change_password('dick', 'zik')
-    #tpasswd.add_user('mick', 'rick')
+    htpasswd = Htpasswd('./resources/htpasswd')
+    htpasswd.add_user('pip', 'bip', crypt.METHOD_MD5)
+    htpasswd.add_user('dick', 'sik', crypt.METHOD_CRYPT)
 
-    htpasswd.write('./resources/htpasswd1')
     print(htpasswd.data)
     print(htpasswd.check_user('admin', 'aaa'))
     print(htpasswd.check_user('pip', 'bip'))
@@ -29,7 +26,6 @@ def main():
     htpasswd.change_password('pip')
     print(htpasswd.data)
     htpasswd.write('./resources/htpasswd1')
-'''
     compare_time()
 
 #    compare_jtr()
@@ -66,6 +62,23 @@ class Htpasswd():
             print("Wrong password")
         return False
 
+    def add_user(self, username: str, password: str, method):
+        self.data[username] = crypt.crypt(password, method)
+
+    def check_user(self, username: str, password: str):
+        if self.data.__contains__(username):
+            return self.data[username] == crypt.crypt(password, self.data[username])
+        return False
+
+    @staticmethod
+    def _fromfile(filename: str) -> Dict[str, str]:
+        data = {}
+        with open(filename, 'r') as f:
+            for line in f:
+                user, passwd = line.strip().split(':')
+                data[user] = passwd
+        return data
+
 
 def md5():
     crypt.crypt(''.join(random.choices(string.ascii_lowercase, k=3)), crypt.METHOD_MD5)
@@ -82,22 +95,6 @@ def compare_time():
     cryptime = timeit.timeit(crypting, number=5000)
     print('Algorytm crypt: {} hashy na sekundę.', iterations / cryptime)
 
-    def add_user(self, username: str, password: str, method):
-        self.data[username] = crypt.crypt(password, crypt.METHOD_MD5)
-
-    def check_user(self, username: str, password: str):
-        if self.data.__contains__(username):
-            return self.data[username] == crypt.crypt(password, self.data[username])
-        return False
-
-    @staticmethod
-    def _fromfile(filename: str) -> Dict[str, str]:
-        data = {}
-        with open(filename, 'r') as f:
-            for line in f:
-                user, passwd = line.strip().split(':')
-                data[user] = passwd
-        return data
 
 
 def md5sum(filename: str) -> str:
