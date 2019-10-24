@@ -28,8 +28,6 @@ def main():
     htpasswd.write('./resources/htpasswd1')
     compare_time()
 
-#    compare_jtr()
-
 
 class Htpasswd():
     data: Dict[str, str]
@@ -94,7 +92,6 @@ def compare_time():
     print('Algorytm MD5: {} hashy na sekundę.', iterations / m5time)
     cryptime = timeit.timeit(crypting, number=5000)
     print('Algorytm crypt: {} hashy na sekundę.', iterations / cryptime)
-
 
 
 def md5sum(filename: str) -> str:
