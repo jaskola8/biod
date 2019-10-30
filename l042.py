@@ -14,12 +14,11 @@ def xor64(a, b):
 
 
 random = get_random_bytes(8)
-counter = lambda: random
 
 
 def encrypt_CTR_serial(key, plain_text):
     vector = bytearray(plain_text, 'utf-8')
-    des = DES.new(key, DES.MODE_CTR, counter=counter)
+    des = DES.new(key, DES.MODE_CTR, counter=lambda: random)
     for i in range(no_blocks):
         offset = i * block_size
         block = plain_text[offset:offset + block_size]
@@ -32,7 +31,7 @@ def encrypt_CTR_serial(key, plain_text):
 
 def decrypt_CTR_serial(key, encrypted_block):
     vector = bytearray(encrypted_block)
-    des = DES.new(key, DES.MODE_CTR, counter=counter)
+    des = DES.new(key, DES.MODE_CTR, counter=lambda: random)
     for i in range(no_blocks):
         offset = i * block_size
         block = encrypted_block[offset:offset + block_size]
@@ -43,7 +42,7 @@ def decrypt_CTR_serial(key, encrypted_block):
     return bytes(vector)
 
 
-plain_text = "alamakot" * 1000
+plain_text = "alamakot" * 10000
 key = "haslo123"
 iv = get_random_bytes(8)
 block_size = 8
@@ -53,27 +52,28 @@ starttime = time.time()
 encryptedCTR = encrypt_CTR_serial(key, plain_text)
 print('CTR Encrypt time serial: ', (time.time() - starttime))
 
-starttime = time.time()
-decrypted = decrypt_CTR_serial(key, encryptedCTR)
-print("".join(map(chr, decrypted)))
-print('CTR Decrypt time serial: ', (time.time() - starttime))
+# starttime = time.time()
+# decrypted = decrypt_CTR_serial(key, encryptedCTR)
+# print("".join(map(chr, decrypted)))
+# print('CTR Decrypt time serial: ', (time.time() - starttime))
+
+if __name__ == "__main__":
+    def mapper(i):
+        offset = i * block_size
+        block = bytes(shared_data[offset:offset + block_size])
+        for j in range(1000):
+            decrypted = des.decrypt(block)
+            block = decrypted
+        output_data[offset:offset + block_size] = bytearray(decrypted)
+        return i
 
 
-def mapper(i):
-    offset = i * block_size
-    block = bytes(shared_data[offset:offset + block_size])
-    for j in range(1000):
-        decrypted = des.decrypt(block)
-        block = decrypted
-    output_data[offset:offset + block_size] = bytearray(decrypted)
-    return i
-
-
-des = DES.new(key, DES.MODE_CTR, counter=counter)
-shared_data = multiprocessing.RawArray(ctypes.c_ubyte, encryptedCTR)
-output_data = multiprocessing.RawArray(ctypes.c_ubyte, encryptedCTR)
-pool = multiprocessing.Pool(4)
-starttime = time.time()
-pool.map(mapper, range(no_blocks))
-print('CTR Decrypt time parallel: ', (time.time() - starttime))
-decrypted = bytes(output_data)
+    des = DES.new(key, DES.MODE_CTR, counter=lambda: random)
+    shared_data = multiprocessing.RawArray(ctypes.c_ubyte, encryptedCTR)
+    output_data = multiprocessing.RawArray(ctypes.c_ubyte, encryptedCTR)
+    pool = multiprocessing.Pool(4)
+    starttime = time.time()
+    pool.map(mapper, range(no_blocks))
+    print('CTR Decrypt time parallel: ', (time.time() - starttime))
+    decrypted = bytes(output_data)
+    print("".join(map(chr, decrypted)))

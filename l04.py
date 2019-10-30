@@ -15,7 +15,7 @@ def xor64(a, b):
 
 def encrypt_ECB_serial(key, plain_text):
     vector = bytearray(plain_text, 'utf-8')
-    aes = AES.new(key)
+    aes = AES.new(key, AES.MODE_ECB)
     for i in range(no_blocks):
         offset = i * block_size
         block = plain_text[offset:offset + block_size]
@@ -28,7 +28,7 @@ def encrypt_ECB_serial(key, plain_text):
 
 def decrypt_ECB_serial(key, encrypted_block):
     vector = bytearray(encrypted_block)
-    aes = AES.new(key)
+    aes = AES.new(key, AES.MODE_ECB)
     for i in range(no_blocks):
         offset = i * block_size
         block = encrypted_block[offset:offset + block_size]
@@ -40,7 +40,7 @@ def decrypt_ECB_serial(key, encrypted_block):
 
 
 if __name__ == "__main__":
-    plain_text = "alamakot" * 1000
+    plain_text = "alamakot" * 20000
     key = "key4567890123456"
     iv = get_random_bytes(16)
     block_size = 16
