@@ -1,15 +1,15 @@
 from typing import Tuple
 
 
-def keygen() -> Tuple[str, str]:
+def keygen() -> Tuple[bytearray, bytearray]:
     pass
 
 
-def encrypt_RSA(text: str, key: str) -> bytearray:
+def encrypt_RSA(text: str, key: bytearray) -> bytearray:
     pass
 
 
-def decrypt_RSA(ciphertext: bytearray, key: str) -> str:
+def decrypt_RSA(ciphertext: bytearray, key: bytearray) -> str:
     pass
 
 
